@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>مكتبة STEAM</title>
+  <style>
+    /* Reset */
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0; padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+      color: #e0f2f1;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      user-select: none;
+    }
+    /* الشريط العلوي */
+    #topBar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 55px;
+      background: linear-gradient(90deg, #00bfa5, #004d40);
+      box-shadow: 0 4px 15px rgba(0, 77, 64, 0.9);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 25px;
+      color: #e0f2f1;
+      font-weight: 700;
+      font-size: 1.1rem;
+      z-index: 10000;
+      user-select: none;
+    }
+    #topBar .siteTitle {
+      letter-spacing: 0.08em;
+      font-size: 1.4rem;
+      user-select: none;
+    }
+    #topBar .userSection {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    #topBar .usernameDisplay {
+      background: #00796bdd;
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-family: 'Courier New', monospace;
+      user-select: text;
+      max-width: 200px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    #logoutBtn {
+      background: #004d40;
+      border: none;
+      padding: 6px 16px;
+      border-radius: 20px;
+      color: #a7ffeb;
+      cursor: pointer;
+      font-weight: 800;
+      box-shadow: 0 0 8px #00bfa5bb;
+      transition: background-color 0.3s ease, color 0.3s ease;
+      user-select: none;
+    }
+    #logoutBtn:hover {
+      background-color: #00bfa5;
+      color: #004d40;
+      box-shadow: 0 0 12px #00f2cccc;
+    }
+
+    /* تباعد المحتوى عن الشريط العلوي */
+    #mainContainer, header, #searchInput {
+      margin-top: 65px;
+      width: 90%;
+      max-width: 1200px;
+    }
+
+    header {
+      font-size: 2.8rem;
+      font-weight: 900;
+      margin-bottom: 20px;
+      text-shadow: 0 0 15px #26a69a;
+      letter-spacing: 0.07em;
+      user-select: none;
+      text-align: center;
+    }
+
+    /* الحاوية الرئيسية */
+    #mainContainer {
+      display: flex;
+      gap: 25px;
+      margin-bottom: 60px;
+      min-height: 70vh;
+    }
+
+    /* الشريط الجانبي للفلاتر */
+    #filtersPanel {
+      flex: 0 0 220px;
+      background: #00000033;
+      border-radius: 20px;
+      padding: 25px 20px;
+      box-shadow: 0 0 30px #00000088 inset;
+      color: #a7ffebcc;
+      user-select: none;
+    }
+    #filtersPanel h2 {
+      margin-top: 0;
+      font-weight: 900;
+      font-size: 1.6rem;
+      margin-bottom: 20px;
+      text-align: center;
+      letter-spacing: 0.04em;
+    }
+    #filtersPanel label {
+      display: block;
+      margin-bottom: 14px;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: color 0.25s ease;
+      user-select: none;
+    }
+    #filtersPanel label:hover {
+      color: #00f2cc;
+    }
+    #filtersPanel input[type="checkbox"] {
+      margin-left: 10px;
+      cursor: pointer;
+      width: 20px;
+      height: 20px;
+      vertical-align: middle;
+      accent-color: #00bfa5;
+    }
+
+    /* الحاوية للبطاقات */
+    .cards-container {
+      flex-grow: 1;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 28px;
+      user-select: none;
+      perspective: 1200px;
+    }
+
+    /* تصميم البطاقات */
+    .card {
+      background: linear-gradient(145deg, #004d4033, #00241e77);
+      border-radius: 24px;
+      box-shadow:
+        0 8px 24px rgba(0, 255, 230, 0.6),
+        inset 0 0 15px #00f2cc99;
+      cursor: pointer;
+      overflow: hidden;
+      transition:
+        transform 0.35s cubic-bezier(0.25, 0.8, 0.25, 1),
+        box-shadow 0.35s ease,
+        background-color 0.35s ease;
+      display: flex;
+      flex-direction: column;
+      user-select: none;
+      will-change: transform;
+      outline-offset: 6px;
+      color: #a7ffeb;
+    }
+    .card:hover,
+    .card:focus-visible {
+      transform: translateY(-16px) rotateX(5deg) rotateY(7deg) scale(1.07);
+      box-shadow:
+        0 30px 60px rgba(0, 255, 230, 0.9),
+        inset 0 0 30px #00f2cccc;
+      outline: 3px solid #00f2cccc;
+      outline-offset: 4px;
+      background: linear-gradient(145deg, #004d40ee, #008e76ee);
+      color: #d1fff7;
+    }
+    .card img {
+      width: 100%;
+      height: 160px;
+      object-fit: cover;
+      border-bottom: 4px solid #00bfa533;
+      transition: transform 0.3s ease, filter 0.3s ease;
+      user-select: none;
+    }
+    .card:hover img,
+    .card:focus-visible img {
+      transform: scale(1.05);
+      filter: drop-shadow(0 0 16px #00f2ccbb);
+    }
+    .card h3 {
+      margin: 16px 16px 4px;
+      font-weight: 900;
+      font-size: 1.5rem;
+      text-align: center;
+      letter-spacing: 0.04em;
+    }
+    .card .game-type {
+      font-size: 1rem;
+      font-weight: 600;
+      text-align: center;
+      margin-bottom: 14px;
+      color: #70e6d9cc;
+      letter-spacing: 0.02em;
+      font-style: italic;
+    }
+
+    /* التركيز بالكيبورد */
+    .card:focus-visible {
+      outline: none;
+    }
+
+    /* بحث علوي */
+    #searchInput {
+      margin: 0 auto 25px auto;
+      width: 90%;
+      max-width: 400px;
+      padding: 14px 18px;
+      font-size: 1.2rem;
+      border-radius: 40px;
+      border: none;
+      box-shadow: 0 0 20px #00bfa5aa inset;
+      color: #004d40;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      user-select: text;
+      transition: box-shadow 0.3s ease;
+    }
+    #searchInput::placeholder {
+      color: #00bfa599;
+      font-weight: 600;
+      font-style: italic;
+    }
+    #searchInput:focus {
+      outline: none;
+      box-shadow: 0 0 30px #00f2ccff inset;
+      color: #00261a;
+    }
+
+    /* استجابة الهواتف */
+    @media (max-width: 850px) {
+      #mainContainer {
+        flex-direction: column;
+      }
+      #filtersPanel {
+        width: 100%;
+        margin-bottom: 20px;
+        border-radius: 20px;
+      }
+      .cards-container {
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+        width: 100%;
+      }
+    }
+    @media (max-width: 450px) {
+      .card h3 {
+        font-size: 1.2rem;
+      }
+      .card .game-type {
+        font-size: 0.9rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div id="topBar" role="banner" aria-label="شريط معلومات المستخدم">
+  <div class="siteTitle" aria-label="عنوان الموقع">مكتبة STEAM</div>
+  <div class="userSection" aria-label="معلومات المستخدم">
+    <div>مرحباً، <span id="usernameDisplay" aria-live="polite" aria-atomic="true">-</span></div>
+    <button id="logoutBtn" aria-label="تسجيل الخروج">تسجيل خروج</button>
+  </div>
+</div>
+
+<header>مكتبة STEAM</header>
+
+<input type="search" id="searchInput" placeholder="ابحث عن لعبة..." aria-label="بحث في الألعاب" autocomplete="off" spellcheck="false" />
+
+<div id="mainContainer">
+
+  <aside id="filtersPanel" aria-label="فلاتر تصنيف الألعاب">
+    <h2>أنواع الألعاب</h2>
+    <label><input type="checkbox" value="أكشن" checked /> أكشن</label>
+    <label><input type="checkbox" value="حرب" checked /> حرب</label>
+    <label><input type="checkbox" value="سباق" checked /> سباق</label>
+    <label><input type="checkbox" value="مغامرات" checked /> مغامرات</label>
+    <label><input type="checkbox" value="ألغاز" checked /> ألغاز</label>
+    <label><input type="checkbox" value="استراتيجية" checked /> استراتيجية</label>
+  </aside>
+
+  <section class="cards-container" id="gamesContainer" aria-label="قائمة الألعاب">
+    <!-- البطاقات ستُولد بواسطة الجافاسكريبت -->
+  </section>
+
+</div>
+
+<script>
+  const games = [
+    {
+      id: 'game1',
+      name: 'The Planet Crafter',
+      img: 'https://cdn.discordapp.com/attachments/1339436496574349404/1374433732806840484/the-planet-crafter_zx66.1200.webp?ex=682e08a9&is=682cb729&hm=b24556c692cb1ffde2e8362bf97f4ae52870bcc1070c01e948a59ce39cd19bd8&',
+      username: 'ggqqxx5830',
+      password: 'sS94qwjsplay',
+      type: 'مغامرات'
+    },
+    {
+      id: 'game2',
+      name: 'The Escapists',
+      img: 'https://cdn.discordapp.com/attachments/1339436496574349404/1374468790921986078/photo_2025-05-20_22-28-00.jpg?ex=682e2950&is=682cd7d0&hm=1149aa887e00f2f293a257dc80ad0286fb9085440a02a5a108322b0e5e1cd50b&',
+      username: 'vovan159rus',
+      password: '94529452',
+      type: 'أكشن'
+    },
+    {
+      id: 'game3',
+      name: 'لعبة القتال',
+      img: 'https://picsum.photos/seed/fighting/400/225',
+      username: 'fighterX',
+      password: 'powerPunch',
+      type: 'أكشن'
+    },
+    {
+      id: 'game4',
+      name: 'لعبة الحرب',
+      img: 'https://picsum.photos/seed/war/400/225',
+      username: 'warrior99',
+      password: 'battle2023',
+      type: 'حرب'
+    },
+    {
+      id: 'game5',
+      name: 'لعبة الأحجيات',
+      img: 'https://picsum.photos/seed/puzzle/400/225',
+      username: 'puzzler',
+      password: 'brainy',
+      type: 'ألغاز'
+    },
+    {
+      id: 'game6',
+      name: 'لعبة الإستراتيجية',
+      img: 'https://picsum.photos/seed/strategy/400/225',
+      username: 'strategist',
+      password: 'plan123',
+      type: 'استراتيجية'
+    }
+  ];
+
+  const container = document.getElementById('gamesContainer');
+  const searchInput = document.getElementById('searchInput');
+  const filtersPanel = document.getElementById('filtersPanel');
+  const filterCheckboxes = filtersPanel.querySelectorAll('input[type="checkbox"]');
+
+  // جلب اسم المستخدم من الجلسة للعرض في الشريط العلوي
+  const usernameDisplay = document.getElementById('usernameDisplay');
+  const loggedInUser = sessionStorage.getItem('loggedInUser') || 'ضيف';
+  usernameDisplay.textContent = loggedInUser;
+
+  // زر خروج ومسح الجلسة
+  const logoutBtn = document.getElementById('logoutBtn');
+  logoutBtn.addEventListener('click', () => {
+    sessionStorage.removeItem('loggedInUser');
+    window.location.href = 'login.html'; // أو الصفحة التي تريد العودة إليها بعد الخروج
+  });
+
+  function renderGames(filteredGames) {
+    container.innerHTML = '';
+    if (filteredGames.length === 0) {
+      container.innerHTML = `<p style="color:#00fffacc; text-align:center; font-size:1.2rem;">لم يتم العثور على ألعاب مطابقة للبحث أو الفلاتر.</p>`;
+      return;
+    }
+    filteredGames.forEach(game => {
+      const card = document.createElement('article');
+      card.className = 'card';
+      card.tabIndex = 0;
+      card.setAttribute('role', 'button');
+      card.setAttribute('aria-pressed', 'false');
+      card.setAttribute('aria-label', `فتح معلومات لعبة ${game.name}`);
+
+      card.innerHTML = `
+        <img src="${game.img}" alt="صورة لعبة ${game.name}" loading="lazy" />
+        <h3>${game.name}</h3>
+        <p class="game-type">${game.type}</p>
+      `;
+
+      card.addEventListener('click', () => {
+        localStorage.setItem('selectedGame', JSON.stringify(game));
+        window.location.href = 'game-info.html';
+      });
+
+      card.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          card.click();
+        }
+      });
+
+      container.appendChild(card);
+    });
+  }
+
+  // فلترة الألعاب حسب البحث والفلاتر
+  function filterGames() {
+    const searchTerm = searchInput.value.trim().toLowerCase();
+    // جمع الفلاتر المحددة
+    const activeTypes = Array.from(filterCheckboxes)
+      .filter(chk => chk.checked)
+      .map(chk => chk.value);
+
+    const filtered = games.filter(game => {
+      const matchesSearch = game.name.toLowerCase().includes(searchTerm);
+      const matchesType = activeTypes.includes(game.type);
+      return matchesSearch && matchesType;
+    });
+
+    renderGames(filtered);
+  }
+
+  // ربط الأحداث
+  searchInput.addEventListener('input', filterGames);
+  filterCheckboxes.forEach(chk => chk.addEventListener('change', filterGames));
+
+  // عرض كل الألعاب عند البداية
+  renderGames(games);
+</script>
+</body>
+</html>

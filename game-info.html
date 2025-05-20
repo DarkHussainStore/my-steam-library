@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>تفاصيل اللعبة - مكتبة STEAM</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@600;900&display=swap');
+
+    /* Reset */
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0; padding: 0;
+      font-family: 'Cairo', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+      color: #e0f2f1;
+      min-height: 100vh;
+      display: flex; 
+      flex-direction: column; 
+      align-items: center;
+      user-select: none;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* شريط علوي */
+    #topBar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 55px;
+      background: linear-gradient(90deg, #00bfa5, #004d40);
+      box-shadow: 0 4px 15px rgba(0, 77, 64, 0.9);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 25px;
+      color: #e0f2f1;
+      font-weight: 700;
+      font-size: 1.1rem;
+      z-index: 10000;
+      user-select: none;
+    }
+    #topBar .siteTitle {
+      letter-spacing: 0.08em;
+      font-size: 1.4rem;
+    }
+    #topBar .userSection {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    #topBar .usernameDisplay {
+      background: #00796bdd;
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-family: 'Courier New', monospace;
+      user-select: text;
+      max-width: 200px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    #logoutBtn {
+      background: #004d40;
+      border: none;
+      padding: 6px 16px;
+      border-radius: 20px;
+      color: #a7ffeb;
+      cursor: pointer;
+      font-weight: 800;
+      box-shadow: 0 0 8px #00bfa5bb;
+      transition: background-color 0.3s ease, color 0.3s ease;
+      user-select: none;
+    }
+    #logoutBtn:hover {
+      background-color: #00bfa5;
+      color: #004d40;
+      box-shadow: 0 0 12px #00f2cccc;
+    }
+
+    /* تباعد المحتوى عن الشريط العلوي */
+    main {
+      margin-top: 75px;
+      background: linear-gradient(145deg, #004d4033, #00241e77);
+      padding: 40px 50px;
+      border-radius: 30px;
+      box-shadow: 0 15px 35px rgba(0, 77, 64, 0.4),
+                  inset 0 0 50px #00f2ccaa;
+      max-width: 480px;
+      width: 90%;
+      color: #a7ffeb;
+      user-select: text;
+      font-weight: 600;
+      font-size: 1.2rem;
+      text-align: center;
+    }
+
+    h1 {
+      margin-top: 0;
+      font-size: 2.6rem;
+      font-weight: 900;
+      margin-bottom: 40px;
+      text-shadow: 0 0 20px #00f2ccaa;
+      letter-spacing: 0.06em;
+    }
+
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 28px;
+      font-size: 1.3rem;
+      letter-spacing: 0.03em;
+    }
+
+    .label {
+      flex: 1 1 40%;
+      text-align: right;
+      color: #70e6d9cc;
+      font-weight: 700;
+      user-select: none;
+    }
+
+    .value {
+      flex: 1 1 55%;
+      background: #00332dcc;
+      border-radius: 15px;
+      padding: 12px 20px;
+      font-family: 'Courier New', monospace;
+      color: #a7ffeb;
+      box-shadow: inset 0 0 10px #00f2ccaa;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      user-select: text;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+    }
+
+    .copy-btn {
+      background: #00bfa5;
+      border: none;
+      color: white;
+      padding: 8px 18px;
+      border-radius: 30px;
+      cursor: pointer;
+      font-size: 1rem;
+      user-select: none;
+      box-shadow: 0 0 12px #00f2ccdd;
+      transition: background-color 0.3s ease, transform 0.15s ease, box-shadow 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 700;
+    }
+    .copy-btn:hover {
+      background: #008e76;
+      box-shadow: 0 0 18px #00f2ccff;
+      transform: scale(1.12);
+    }
+    .copy-btn:active {
+      transform: scale(0.95);
+    }
+    .copy-btn svg {
+      width: 20px;
+      height: 20px;
+      fill: white;
+      pointer-events: none;
+    }
+
+    #copyMessage {
+      position: fixed;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #00bfa5cc;
+      color: white;
+      padding: 14px 28px;
+      border-radius: 50px;
+      font-weight: 900;
+      font-size: 1.2rem;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+      user-select: none;
+      z-index: 9999;
+      box-shadow: 0 0 15px #00f2cccc;
+      text-shadow: 0 0 6px #004d4099;
+    }
+
+    #backBtn {
+      margin: 50px auto 60px;
+      display: block;
+      background: linear-gradient(135deg, #00bfa5, #004d40);
+      border: none;
+      color: white;
+      padding: 16px 40px;
+      font-size: 1.3rem;
+      border-radius: 50px;
+      cursor: pointer;
+      box-shadow: 0 8px 30px #00bfa5cc;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+      user-select: none;
+      font-weight: 700;
+      text-shadow: 0 0 12px #00f2ccbb;
+    }
+    #backBtn:hover {
+      background: linear-gradient(135deg, #004d40, #00bfa5);
+      box-shadow: 0 12px 40px #00f2cccc;
+      transform: scale(1.1);
+    }
+    #backBtn:active {
+      transform: scale(0.95);
+    }
+  </style>
+</head>
+<body>
+
+<div id="topBar" role="banner" aria-label="شريط معلومات المستخدم">
+  <div class="siteTitle" aria-label="عنوان الموقع">مكتبة STEAM</div>
+  <div class="userSection" aria-label="معلومات المستخدم">
+    <div>مرحباً، <span id="usernameDisplay" aria-live="polite" aria-atomic="true">-</span></div>
+    <button id="logoutBtn" aria-label="تسجيل الخروج">تسجيل خروج</button>
+  </div>
+</div>
+
+<main>
+  <h1 id="gameName">تفاصيل اللعبة</h1>
+
+  <div class="info-row">
+    <div class="label">اسم المستخدم:</div>
+    <div class="value">
+      <span id="username">-</span>
+      <button class="copy-btn" aria-label="نسخ اسم المستخدم" title="نسخ اسم المستخدم">
+        نسخ
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="info-row">
+    <div class="label">كلمة المرور:</div>
+    <div class="value">
+      <span id="password">-</span>
+      <button class="copy-btn" aria-label="نسخ كلمة المرور" title="نسخ كلمة المرور">
+        نسخ
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg>
+      </button>
+    </div>
+  </div>
+</main>
+
+<button id="backBtn" aria-label="العودة إلى صفحة المكتبة" title="العودة إلى صفحة المكتبة">رجوع</button>
+
+<div id="copyMessage" role="alert" aria-live="assertive" aria-atomic="true">تم النسخ!</div>
+
+<script>
+  // جلب اسم المستخدم من الجلسة للعرض في الشريط العلوي
+  const usernameDisplay = document.getElementById('usernameDisplay');
+  const loggedInUser = sessionStorage.getItem('loggedInUser') || 'ضيف';
+  usernameDisplay.textContent = loggedInUser;
+
+  // تحميل بيانات اللعبة من localStorage
+  const game = JSON.parse(localStorage.getItem('selectedGame'));
+  const gameNameElem = document.getElementById('gameName');
+  const usernameElem = document.getElementById('username');
+  const passwordElem = document.getElementById('password');
+
+  if (game) {
+    gameNameElem.textContent = game.name || 'تفاصيل اللعبة';
+    usernameElem.textContent = game.username || '-';
+    passwordElem.textContent = game.password || '-';
+  } else {
+    gameNameElem.textContent = 'لم يتم العثور على بيانات اللعبة';
+    usernameElem.textContent = '-';
+    passwordElem.textContent = '-';
+  }
+
+  // وظيفة النسخ للزر
+  function copyText(text) {
+    navigator.clipboard.writeText(text).then(() => {
+      showCopyMessage();
+    }).catch(() => {
+      alert('حدث خطأ أثناء النسخ، الرجاء المحاولة يدوياً.');
+    });
+  }
+
+  // إظهار رسالة النسخ لفترة قصيرة
+  function showCopyMessage() {
+    const msg = document.getElementById('copyMessage');
+    msg.style.opacity = '1';
+    setTimeout(() => {
+      msg.style.opacity = '0';
+    }, 2000);
+  }
+
+  // ربط أزرار النسخ
+  document.querySelectorAll('.copy-btn').forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      const valSpan = e.target.closest('button').previousElementSibling;
+      if (valSpan) {
+        copyText(valSpan.textContent);
+      }
+    });
+  });
+
+  // زر الخروج
+  document.getElementById('logoutBtn').addEventListener('click', () => {
+    sessionStorage.removeItem('loggedInUser');
+    window.location.href = 'login.html';
+  });
+
+  // زر الرجوع
+  document.getElementById('backBtn').addEventListener('click', () => {
+    window.history.back();
+  });
+</script>
+
+</body>
+</html>
